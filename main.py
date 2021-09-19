@@ -12,6 +12,7 @@ Teacher: Ben Kerr
 """
 
 import pygame
+from pygame import mixer
 import math
 import sys
 import time
@@ -23,6 +24,7 @@ logging.basicConfig(filename='./log/debug.log', filemode='w', format='%(process)
 
 # initializing the constructor
 pygame.init()
+mixer.init()
 logging.debug('constructor initialized')
 stage = 1
 logging.debug('stage variable set to 1')
@@ -41,16 +43,27 @@ class images:
     bg = pygame.image.load('./images/bg/bg2.jpg')
     bgImgResize = pygame.transform.scale(bg, (1280,720))
     icon = pygame.image.load('./images/icon/the-python-maze-icon.png')
+    welcomeBg = pygame.image.load('./images/bg/welcome.png')
+    startButtonInactive = pygame.image.load('./images/buttons/start-inactive.png')
+    startButtonActive = pygame.image.load('./images/buttons/start-active.png')
+    quitButtonInactive = pygame.image.load('./images/buttons/quit-inactive.png')
+    quitButtonActive = pygame.image.load('./images/buttons/quit-active.png')
+    audioOn = pygame.image.load('./images/buttons/audio-on.png')
+    audioOff = pygame.image.load('./images/buttons/audio-off.png')
 
 class windowSettings:
     res = 1280, 720
     font = pygame.font.Font('./font/pixel-font.ttf', 30)
 
 class settings:
-    fps = 15
+    fps = 10
+    fpsClock = pygame.time.Clock()
     speed = 3
+    musicVolume = 0.7
     clock = pygame.time.Clock()
     mouse_pos = ""
+    mixer.music.load('./sounds/music.mp3')
+    mixer.music.set_volume(musicVolume)
 
 class player:
     playerImg = pygame.image.load('./images/user/knight.png')
@@ -62,25 +75,22 @@ class player:
 
 class widgets:
     # defining button structure
-    def button(msg,x,y,w,h,borderWidth,borderRadius,borderTopLeftRadius,borderTopRightRadius,borderBottomLeftRadius,borderBottomRightRadius,borderColour,adjustX,adjustY,inactiveColour,activeColour,textColour,action=None):
+    def button(x,y,w,inactiveImage,activeImage,action=None):
+        h = math.ceil(w/2.33)
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
         widgetSettings.button.width = w
         widgetSettings.button.height = h
         widgetSettings.button.x = x
         widgetSettings.button.y = y
+        inactiveImageResize = pygame.transform.scale(inactiveImage, (w,h))
+        activeImageResize = pygame.transform.scale(activeImage, (w,h))
         if x+w > mouse[0] > x and y+h > mouse[1] > y:
-            pygame.draw.rect(window, activeColour, (x,y,w,h))
-            pygame.draw.rect(window, borderColour, (x-1,y-1,w+4,h+4), borderRadius, borderTopLeftRadius, borderTopRightRadius, borderBottomLeftRadius, borderBottomRightRadius)
+            window.blit(activeImageResize, (x,y))
             if click[0] == 1 and action != None:
                 action()
         else:
-            pygame.draw.rect(window, inactiveColour, (x,y,w,h))
-            pygame.draw.rect(window, borderColour, (x-1,y-1,w+4,h+4), borderRadius, borderTopLeftRadius, borderTopRightRadius, borderBottomLeftRadius, borderBottomRightRadius)
-        text = windowSettings.font.render(msg, True, textColour)
-        center = ((x+(w/2)-adjustX)), y+((h/2)-adjustY)
-        window.blit(text,center)
-
+            window.blit(inactiveImageResize, (x,y))
     # defining text box structure
     def textBox(msg,x,y,w,h,borderWidth,borderRadius,borderTopLeftRadius,borderTopRightRadius,borderBottomLeftRadius,borderBottomRightRadius,borderColour,adjustX,adjustY,colour,textColour):
         widgetSettings.button.width = w
@@ -97,8 +107,14 @@ logging.debug('classes loaded')
 
 # creates the screen and changes icon and initialized font
 window = pygame.display.set_mode(windowSettings.res)
+mixer.music.play()
+audio = "on"
 pygame.font.init()
 icon = pygame.display.set_icon(images.icon)
+if audio == "on":
+    audioButton = "on"
+elif audio == "off":
+    audioButton = "off"
 
 logging.debug('screen loaded, icon changed and initialized font')
 
@@ -141,21 +157,32 @@ def gameStart():
     logging.debug('stage set to 2')
 logging.debug('gameStart function loaded')
 
+def audioOn():
+    mixer.music.unpause()
+    audio = "on"
+
+def audioOff():
+    mixer.music.pause()
+    audio = "off"
+
 # runtime welcome screen
 def welcome():
+
     mouse = pygame.mouse.get_pos()
     logging.debug('mouse variable assigned')
-    window.blit(images.bgImgResize, (0, 0))
+    window.blit(images.welcomeBg, (0, 0))
     logging.debug("background blit'd")
     pygame.display.set_caption('The Python Maze - Welcome')
     logging.debug("title set to 'The Python Maze - Welcome'")
-    widgets.textBox("The Python Maze",360,125,500,100,2,4,4,4,4,4,colours.black,220,14,colours.black,colours.white)
-    logging.debug('main menu text box loaded')
-    widgets.button("START",250,450,250,80,2,4,4,4,4,4,colours.white,70,13,colours.black,colours.grey,colours.white,gameStart)
+    widgets.button(110,320,300,images.startButtonInactive,images.startButtonActive,gameStart)
     logging.debug('start button loaded')
-    widgets.button("QUIT",750,450,250,80,2,4,4,4,4,4,colours.white,60,13,colours.black,colours.grey,colours.white,quitGame)
+    widgets.button(110,480,300,images.quitButtonInactive,images.quitButtonActive,quitGame)
     logging.debug('quit button loaded')
-    logging.debug('buttons and textbox loaded')
+    if audioButton == "on":
+        widgets.button(-20,60,170,images.audioOn,images.audioOn,audioOff)
+    elif audioButton == "off":
+        widgets.button(-20,60,170,images.audioOff,images.audioOff,audioOn)
+    logging.debug('buttons loaded')
 
 # main game screen
 def main():
@@ -204,3 +231,4 @@ while running:
 
     pygame.display.update()
     logging.debug('display updated')
+    settings.fpsClock.tick(settings.fps)
