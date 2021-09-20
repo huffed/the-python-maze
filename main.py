@@ -55,12 +55,12 @@ class images:
 
 class windowSettings:
     res = 1280, 720
-    font = pygame.font.Font('./font/pixel-font.ttf', 30)
+    #font = pygame.font.Font('./font/pixel-font.ttf', 30)
 
 class settings:
     fps = 10
     fpsClock = pygame.time.Clock()
-    speed = 3
+    speed = 10
     musicVolume = 0.7
     clock = pygame.time.Clock()
     mouse_pos = ""
@@ -69,7 +69,7 @@ class settings:
 
 class player:
     playerImg = pygame.image.load('./images/user/knight.png')
-    playerImgResize = pygame.transform.scale(playerImg, (100, 100))
+    playerImgResize = pygame.transform.scale(playerImg, (130, 130))
     playerX = 200
     playerY = 200
     playerX_change = 0
@@ -166,10 +166,12 @@ logging.debug('gameStart function loaded')
 
 def audioOn():
     mixer.music.unpause()
+    logging.debug('music unpaused')
     audio = "on"
 
 def audioOff():
     mixer.music.pause()
+    logging.debug('music paused')
     audio = "off"
 
 # runtime welcome screen
@@ -215,25 +217,25 @@ while running:
     logging.debug('window fill set to colour-black')
 
     if stage == 1:
-        welcome()
+        main()
         logging.debug('welcome function called')
     elif stage == 2:
-        main()
+        welcome()
         logging.debug('main function called')
 
     # x change borders
     player.playerX += player.playerX_change
-    if player.playerX <= 0:
-        player.playerX = 0
-    elif player.playerX >= 1100:
-        player.playerX = 1100
+    if player.playerX <= -3:
+        player.playerX = -3
+    elif player.playerX >= 1165:
+        player.playerX = 1165
     logging.debug('x change borders set')
     # y change borders
     player.playerY += player.playerY_change
-    if player.playerY <= -12:
-        player.playerY = -12
-    elif player.playerY >= 535:
-        player.playerY = 535
+    if player.playerY <= -10:
+        player.playerY = -10
+    elif player.playerY >= 600:
+        player.playerY = 600
     logging.debug('y change borders set')
 
     pygame.display.update()
