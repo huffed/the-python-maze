@@ -217,10 +217,10 @@ while running:
     logging.debug('window fill set to colour-black')
 
     if stage == 1:
-        main()
+        welcome()
         logging.debug('welcome function called')
     elif stage == 2:
-        welcome()
+        main()
         logging.debug('main function called')
 
     # x change borders
