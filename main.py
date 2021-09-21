@@ -111,10 +111,6 @@ mixer.music.play()
 audio = "on"
 pygame.font.init()
 icon = pygame.display.set_icon(images.icon)
-if audio == "on":
-    audioButton = "on"
-elif audio == "off":
-    audioButton = "off"
 
 logging.debug('screen loaded, icon changed and initialized font')
 
@@ -153,15 +149,18 @@ def quitGame():
 logging.debug('quitGame function loaded')
 
 def gameStart():
+    global stage
     stage = 2
     logging.debug('stage set to 2')
 logging.debug('gameStart function loaded')
 
 def audioOn():
+    global audio
     mixer.music.unpause()
     audio = "on"
 
 def audioOff():
+    global audio
     mixer.music.pause()
     audio = "off"
 
@@ -178,9 +177,9 @@ def welcome():
     logging.debug('start button loaded')
     widgets.button(110,480,300,images.quitButtonInactive,images.quitButtonActive,quitGame)
     logging.debug('quit button loaded')
-    if audioButton == "on":
+    if audio == "on":
         widgets.button(-20,60,170,images.audioOn,images.audioOn,audioOff)
-    elif audioButton == "off":
+    elif audio == "off":
         widgets.button(-20,60,170,images.audioOff,images.audioOff,audioOn)
     logging.debug('buttons loaded')
 
