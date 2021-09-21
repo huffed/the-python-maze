@@ -17,8 +17,11 @@ import math
 import sys
 import time
 import logging
-from tkinter import *
+import tkinter as tk
 from tkinter import messagebox
+import base64
+import zlib
+import tempfile
 
 # logging.basicConfig(filename='./log/info.log', filemode='w', format='%(process)d - %(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 # logging.basicConfig(filename='./log/error.log', filemode='w', format='%(process)d - %(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.ERROR)
@@ -105,6 +108,13 @@ class widgets:
         center = ((x+(w/2)-adjustX)), y+((h/2)-adjustY)
         window.blit(text,center)
 
+class transparentIcon:
+    ICON = zlib.decompress(base64.b64decode('eJxjYGAEQgEBBiDJwZDBy'
+        'sAgxsDAoAHEQCEGBQaIOAg4sDIgACMUj4JRMApGwQgF/ykEAFXxQRc='))
+    _, ICON_PATH = tempfile.mkstemp()
+    with open(ICON_PATH, 'wb') as icon_file:
+        icon_file.write(ICON)
+
 logging.debug('classes loaded')
 
 # creates the screen and changes icon and initialized font
@@ -144,12 +154,13 @@ def playerxy(x, y):
 logging.debug('playerxy function loaded')
 
 def quitGame():
-    res = messagebox.askquestion('Quit', 'Are you sure you want to quit?')
-    if res == 'yes':
+    global popUps
+    popUp = messagebox.askquestion('Quit', 'Are you sure you want to quit?')
+    if popUp == 'yes':
         pygame.quit()
         running = False
         quit()
-    elif res == 'no':
+    elif popUp == 'no':
         ""
     else:
         messagebox.showwarning('Error', 'Something went wrong!')
@@ -165,11 +176,13 @@ def audioOn():
     global audio
     mixer.music.unpause()
     audio = "on"
+    logging.debug('audio on')
 
 def audioOff():
     global audio
     mixer.music.pause()
     audio = "off"
+    logging.debug('audio off')
 
 # runtime welcome screen
 def welcome():
@@ -188,6 +201,7 @@ def welcome():
         widgets.button(-20,60,170,images.audioOn,images.audioOn,audioOff)
     elif audio == "off":
         widgets.button(-20,60,170,images.audioOff,images.audioOff,audioOn)
+    logging.debug('audio toggle button loaded')
     logging.debug('buttons loaded')
 
 # main game screen
@@ -203,7 +217,12 @@ def main():
 running = True
 logging.debug('running variable set to True')
 while running:
-    Tk().wm_withdraw()
+    popUps = tk.Tk()
+    logging.debug('tk window initialized')
+    popUps.wm_withdraw()
+    logging.debug('tk window withdrawn/hidden')
+    popUps.iconbitmap(default=transparentIcon.ICON_PATH)
+    logging.debug('tk window icon set to transparent icon')
     logging.debug('stage = {}'.format(stage))
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
