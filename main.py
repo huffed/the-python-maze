@@ -17,6 +17,8 @@ import math
 import sys
 import time
 import logging
+from tkinter import *
+from tkinter import messagebox
 
 # logging.basicConfig(filename='./log/info.log', filemode='w', format='%(process)d - %(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 # logging.basicConfig(filename='./log/error.log', filemode='w', format='%(process)d - %(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.ERROR)
@@ -142,10 +144,15 @@ def playerxy(x, y):
 logging.debug('playerxy function loaded')
 
 def quitGame():
-    logging.debug('GAME CLOSED')
-    running = False
-    pygame.quit()
-    quit()
+    res = messagebox.askquestion('Quit', 'Are you sure you want to quit?')
+    if res == 'yes':
+        pygame.quit()
+        running = False
+        quit()
+    elif res == 'no':
+        ""
+    else:
+        messagebox.showwarning('Error', 'Something went wrong!')
 logging.debug('quitGame function loaded')
 
 def gameStart():
@@ -196,6 +203,7 @@ def main():
 running = True
 logging.debug('running variable set to True')
 while running:
+    Tk().wm_withdraw()
     logging.debug('stage = {}'.format(stage))
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
