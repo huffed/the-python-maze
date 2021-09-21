@@ -17,8 +17,6 @@ import math
 import sys
 import time
 import logging
-from tkinter import *
-from tkinter import messagebox
 
 # logging.basicConfig(filename='./log/info.log', filemode='w', format='%(process)d - %(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 # logging.basicConfig(filename='./log/error.log', filemode='w', format='%(process)d - %(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.ERROR)
@@ -55,12 +53,12 @@ class images:
 
 class windowSettings:
     res = 1280, 720
-    #font = pygame.font.Font('./font/pixel-font.ttf', 30)
+    font = pygame.font.Font('./font/pixel-font.ttf', 30)
 
 class settings:
     fps = 10
     fpsClock = pygame.time.Clock()
-    speed = 10
+    speed = 3
     musicVolume = 0.7
     clock = pygame.time.Clock()
     mouse_pos = ""
@@ -69,7 +67,7 @@ class settings:
 
 class player:
     playerImg = pygame.image.load('./images/user/knight.png')
-    playerImgResize = pygame.transform.scale(playerImg, (130, 130))
+    playerImgResize = pygame.transform.scale(playerImg, (100, 100))
     playerX = 200
     playerY = 200
     playerX_change = 0
@@ -148,15 +146,10 @@ def playerxy(x, y):
 logging.debug('playerxy function loaded')
 
 def quitGame():
-    res = messagebox.askquestion('Quit', 'Are you sure you want to quit?')
-    if res == 'yes':
-        pygame.quit()
-        running = False
-        quit()
-    elif res == 'no':
-        ""
-    else:
-        messagebox.showwarning('Error', 'Something went wrong!')
+    logging.debug('GAME CLOSED')
+    running = False
+    pygame.quit()
+    quit()
 logging.debug('quitGame function loaded')
 
 def gameStart():
@@ -166,16 +159,15 @@ logging.debug('gameStart function loaded')
 
 def audioOn():
     mixer.music.unpause()
-    logging.debug('music unpaused')
     audio = "on"
 
 def audioOff():
     mixer.music.pause()
-    logging.debug('music paused')
     audio = "off"
 
 # runtime welcome screen
 def welcome():
+
     mouse = pygame.mouse.get_pos()
     logging.debug('mouse variable assigned')
     window.blit(images.welcomeBg, (0, 0))
@@ -205,7 +197,6 @@ def main():
 running = True
 logging.debug('running variable set to True')
 while running:
-    Tk().wm_withdraw()
     logging.debug('stage = {}'.format(stage))
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -225,17 +216,17 @@ while running:
 
     # x change borders
     player.playerX += player.playerX_change
-    if player.playerX <= -3:
-        player.playerX = -3
-    elif player.playerX >= 1165:
-        player.playerX = 1165
+    if player.playerX <= 0:
+        player.playerX = 0
+    elif player.playerX >= 1100:
+        player.playerX = 1100
     logging.debug('x change borders set')
     # y change borders
     player.playerY += player.playerY_change
-    if player.playerY <= -10:
-        player.playerY = -10
-    elif player.playerY >= 600:
-        player.playerY = 600
+    if player.playerY <= -12:
+        player.playerY = -12
+    elif player.playerY >= 535:
+        player.playerY = 535
     logging.debug('y change borders set')
 
     pygame.display.update()
