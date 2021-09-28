@@ -48,6 +48,7 @@ class images:
     bg = pygame.image.load('./images/bg/bg2.jpg')
     bgImgResize = pygame.transform.scale(bg, (1280,720))
     icon = pygame.image.load('./images/icon/the-python-maze-icon.png')
+    playerImg = pygame.image.load('./images/user/knight.png')
     welcomeBg = pygame.image.load('./images/bg/welcome.png')
     startButtonInactive = pygame.image.load('./images/buttons/start-inactive.png')
     startButtonActive = pygame.image.load('./images/buttons/start-active.png')
@@ -55,15 +56,17 @@ class images:
     quitButtonActive = pygame.image.load('./images/buttons/quit-active.png')
     audioOn = pygame.image.load('./images/buttons/audio-on.png')
     audioOff = pygame.image.load('./images/buttons/audio-off.png')
+    mazeLvl1 = pygame.image.load('./images/maze/maze-lines-1.png')
+    mazeLvl1Resize = pygame.transform.scale(mazeLvl1, (1280,720))
 
 class windowSettings:
     res = 1280, 720
-    font = pygame.font.Font('./font/pixel-font.ttf', 30)
+    #font = pygame.font.Font('./font/pixel-font.ttf', 30)
 
 class settings:
     fps = 10
     fpsClock = pygame.time.Clock()
-    speed = 3
+    speed = 10
     musicVolume = 0.7
     clock = pygame.time.Clock()
     mouse_pos = ""
@@ -71,10 +74,9 @@ class settings:
     mixer.music.set_volume(musicVolume)
 
 class player:
-    playerImg = pygame.image.load('./images/user/knight.png')
-    playerImgResize = pygame.transform.scale(playerImg, (100, 100))
-    playerX = 200
-    playerY = 200
+    playerImgResize = pygame.transform.scale(images.playerImg, (100, 100))
+    playerX = 1035
+    playerY = 585
     playerX_change = 0
     playerY_change = 0
 
@@ -207,6 +209,7 @@ def welcome():
 # main game screen
 def main():
     window.blit(images.bgImgResize, (0, 0))
+    window.blit(images.mazeLvl1Resize, (0, 0))
     logging.debug('background for main loaded')
     pygame.display.set_caption('The Python Maze')
     logging.debug("title set to 'The Python Maze'")
@@ -226,7 +229,9 @@ while running:
     logging.debug('stage = {}'.format(stage))
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            pygame.quit()
             running = False
+            quit()
         events()
     logging.debug('quit event loaded inside loop')
 
@@ -242,18 +247,25 @@ while running:
 
     # x change borders
     player.playerX += player.playerX_change
-    if player.playerX <= 0:
-        player.playerX = 0
-    elif player.playerX >= 1100:
-        player.playerX = 1100
+    if player.playerX <= -2:
+        player.playerX = -2
+    elif player.playerX >= 1191:
+        player.playerX = 1191
     logging.debug('x change borders set')
     # y change borders
     player.playerY += player.playerY_change
-    if player.playerY <= -12:
-        player.playerY = -12
-    elif player.playerY >= 535:
-        player.playerY = 535
+    if player.playerY <= -7:
+        player.playerY = -7
+    elif player.playerY >= 627:
+        player.playerY = 627
     logging.debug('y change borders set')
+
+    # line collision
+    for x1, y1, x2, y2 in walls:
+        if x1 <= playerX <= x2 and y1 <= playerY <= y2:
+            print("COLLIDE")
+            return True
+    return False
 
     pygame.display.update()
     logging.debug('display updated')
