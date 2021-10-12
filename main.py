@@ -22,6 +22,7 @@ from tkinter import messagebox
 import base64
 import zlib
 import tempfile
+import levelOneCollision as collision1
 
 # logging.basicConfig(filename='./log/info.log', filemode='w', format='%(process)d - %(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 # logging.basicConfig(filename='./log/error.log', filemode='w', format='%(process)d - %(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.ERROR)
@@ -66,7 +67,7 @@ class windowSettings:
 class settings:
     fps = 10
     fpsClock = pygame.time.Clock()
-    speed = 10
+    speed = 1
     musicVolume = 0.7
     clock = pygame.time.Clock()
     mouse_pos = ""
@@ -74,7 +75,7 @@ class settings:
     mixer.music.set_volume(musicVolume)
 
 class player:
-    playerImgResize = pygame.transform.scale(images.playerImg, (100, 100))
+    playerImgResize = pygame.transform.scale(images.playerImg, (70, 70))
     playerX = 1035
     playerY = 585
     playerX_change = 0
@@ -125,6 +126,8 @@ mixer.music.play()
 audio = "on"
 pygame.font.init()
 icon = pygame.display.set_icon(images.icon)
+playerCollideX = 0
+playerCollideY = 0
 
 logging.debug('screen loaded, icon changed and initialized font')
 
@@ -220,6 +223,7 @@ def main():
 running = True
 logging.debug('running variable set to True')
 while running:
+    playerCoords = [player.playerX, player.playerY]
     popUps = tk.Tk()
     logging.debug('tk window initialized')
     popUps.wm_withdraw()
@@ -260,12 +264,18 @@ while running:
         player.playerY = 627
     logging.debug('y change borders set')
 
-    # line collision
-    for x1, y1, x2, y2 in walls:
-        if x1 <= playerX <= x2 and y1 <= playerY <= y2:
-            print("COLLIDE")
-            return True
-    return False
+    # collision_check = any(item in check_coords for item in collision1.coords)
+    # print(collision_check)
+    # # line collision
+    # if collision_check is True:
+    #     print("COLLISION")
+    print(playerCoords)
+    if player.playerX in collision1.x1:
+        print("COLLISION")
+        playerCollideX = player.playerX
+        print(playerCollideX)
+        if player.playerX > playerCollideX:
+            player.playerX = playerCollideX
 
     pygame.display.update()
     logging.debug('display updated')
